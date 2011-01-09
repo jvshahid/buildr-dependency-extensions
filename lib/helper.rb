@@ -14,7 +14,7 @@ module TransitiveBuildr
       original_artifact_hash = Artifact.to_hash(artifact)
 
       new_set = original_set.select do |candidate_artifact|
-        candidate_hash = Artifact.to_hash(artifact)
+        candidate_hash = Artifact.to_hash(candidate_artifact)
         candidate_hash[:group] == original_artifact_hash[:group] &&
           candidate_hash[:id] == original_artifact_hash[:id]  &&
           candidate_hash[:type] == original_artifact_hash[:type] &&
