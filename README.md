@@ -11,20 +11,4 @@ This is a Buildr extension that will convert Buildr to transitively resolve depe
     3. Using the highest version (this is the only way to resolve conflicts right now)
 
 # Usage
-Following is an example of a buildfile that uses TransitiveBuildr
-    require 'transitive-buildr/transitive-buildr'
-
-    repositories.remote << "http://www.ibiblio.org/maven2/"
-
-    define 'foo-bar' do
-      extend TransitiveBuildr
-
-      # define the project-version
-      project.version = '1.0.0'
-
-      compile.with artifact('mysql:mysql-connector-java:jar:5.1.14')
-      compile.with artifact('org.clojure:clojure:jar:1.2.0')
-      run.with artifact('mysql:mysql-connector-java:jar:5.1.13')
-    end
-
-In this example the runtime dependencies will be `mysql:mysql-connector-java:jar:5.1.14` and `org.clojure:clojure:jar:1.2.0`
+See the [Usage wiki section](https://github.com/jvshahid/transitive-buildr/wiki/Usage) for examples.
