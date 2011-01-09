@@ -2,7 +2,7 @@ require 'rubygems'
 require 'buildr'
 require 'lib/dependency_lock'
 
-require '/home/jshahid/.rvm/gems/ruby-1.8.7-p302/gems/buildr-1.4.4/spec/spec_helpers'
+require File.expand_path(File.join('spec', 'spec_helpers'), Gem::GemPathSearcher.new.find('buildr').full_gem_path)
 
 describe 'Runtime dependencies' do
   it 'should not have duplicate artifacts' do
