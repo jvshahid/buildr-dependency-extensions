@@ -1,5 +1,5 @@
 unless defined?(Buildr::VERSION)
-  require File.join(File.dirname(__FILE__), 'lib', 'version')
+  require File.join(File.dirname(__FILE__), 'lib', 'transitive-buildr', 'version')
 end
 
 Gem::Specification.new do |spec|
