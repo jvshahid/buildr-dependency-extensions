@@ -53,4 +53,6 @@ XML
     actual_runtime_dependencies = project('TestProject').run.classpath
     actual_runtime_dependencies.should == expected_runtime_dependencies
   end
+
+  it 'should have target/classes'
 end

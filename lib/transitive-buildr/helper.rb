@@ -5,7 +5,7 @@ module TransitiveBuildr
   class HelperFunctions
     # Change the version number to 0 and invoke uniq on the resulting array to get a unique set of artifacts (ignoring the version number)
     def HelperFunctions.get_unique_group_artifact set
-      new_set = set.map { |artifact| hash = Artifact.to_hash(artifact); hash[:version] = 0; Artifact.to_spec(hash) }
+      new_set = set.map { |artifact| puts artifact.class; hash = Artifact.to_hash(artifact); hash[:version] = 0; Artifact.to_spec(hash) }
       new_set.uniq
     end
 
