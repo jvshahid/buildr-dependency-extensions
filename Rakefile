@@ -13,20 +13,20 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# We need JAVA_HOME for most things (setup, spec, etc).
-
 # Load the Gem specification for the current platform (Ruby or JRuby).
-require 'spec/rake/spectask'
-
-def default_spec_opts
-  default = %w{--backtrace}
-  default << '--colour' if $stdout.isatty
-  default
+def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
+  @specs ||= ['ruby', 'java', 'x86-mswin32'].inject({}) { |hash, spec_platform|
+    $platform = spec_platform
+    hash.update(spec_platform=>Gem::Specification.load('transitive-buildr.gemspec'))
+  }
+  @specs[platform]
 end
 
-desc "Run all specs"
-Spec::Rake::SpecTask.new :spec do |task|
-  task.spec_files = FileList['spec/**/*_spec.rb']
-  task.spec_opts = default_spec_opts
-  task.spec_opts << '--format specdoc'
+# Tell us if we need sudo for various commands.
+def sudo_needed?
+  Config::CONFIG['host_os'] !~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i && !ENV['GEM_HOME']
 end
+
+
+desc 'Clean up all temporary directories used for running tests, creating documentation, packaging, etc.'
+task :clobber
