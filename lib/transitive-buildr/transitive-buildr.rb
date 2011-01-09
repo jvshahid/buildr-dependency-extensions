@@ -1,7 +1,5 @@
 require 'buildr/core/project'
 require 'yaml'
-require 'helper'
-require 'resolver'
 
 module TransitiveBuildr
 
