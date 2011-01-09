@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'buildr'
-require 'lib/helper'
+require 'lib/transitive-buildr'
 
 include TransitiveBuildr
 
