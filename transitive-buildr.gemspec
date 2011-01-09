@@ -1,4 +1,4 @@
-unless defined?(Buildr::VERSION)
+unless defined?(TransitiveBuildr::VERSION)
   require File.join(File.dirname(__FILE__), 'lib', 'transitive-buildr', 'version')
 end
 
