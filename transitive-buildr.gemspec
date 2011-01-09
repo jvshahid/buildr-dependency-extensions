@@ -14,8 +14,8 @@ Gem::Specification.new do |spec|
   # $platform global variable.  In all other cases, we figure it out from RUBY_PLATFORM.
   spec.platform       = $platform || RUBY_PLATFORM[/java/] || 'ruby'
 
-  spec.files          = Dir['{lib,spec}/**/*', '*.{gemspec}']
-  spec.require_paths  = 'lib'
+  spec.files                 = Dir['{lib,spec}/**/*', '*.{gemspec}']
+  spec.require_paths  = ['lib']
 
   spec.has_rdoc         = false
 
