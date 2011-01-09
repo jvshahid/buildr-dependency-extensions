@@ -2,9 +2,9 @@ require 'rubygems'
 require 'buildr'
 require 'lib/helper'
 
-include DependencyLocking
+include TransitiveBuildr
 
-describe DependencyLocking::Version do
+describe TransitiveBuildr::Version do
   it 'should sort versions correctly' do
     version1 = Version.new '1.2.3'
     version2 = Version.new '1.2.4'

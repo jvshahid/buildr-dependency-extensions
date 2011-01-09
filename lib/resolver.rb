@@ -1,4 +1,4 @@
-module DependencyLocking
+module TransitiveBuildr
   class InteractiveConflictResolver
     def resolve artifact, all_versions
       all_versions = all_versions.sort.reverse.uniq

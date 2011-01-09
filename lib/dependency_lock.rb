@@ -3,7 +3,7 @@ require 'yaml'
 require 'helper'
 require 'resolver'
 
-module DependencyLocking
+module TransitiveBuildr
 
   include Extension
 

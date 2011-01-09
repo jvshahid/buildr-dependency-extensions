@@ -1,6 +1,6 @@
 require 'buildr/packaging/artifact'
 
-module DependencyLocking
+module TransitiveBuildr
 
   class HelperFunctions
     # Change the version number to 0 and invoke uniq on the resulting array to get a unique set of artifacts (ignoring the version number)

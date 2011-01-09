@@ -7,7 +7,7 @@ require File.expand_path(File.join('spec', 'spec_helpers'), Gem::GemPathSearcher
 describe 'Runtime dependencies' do
   it 'should not have duplicate artifacts' do
     define "TestProject" do
-      extend DependencyLocking
+      extend TransitiveBuildr
 
     write artifact('foo:bar:jar:1.0').pom.to_s, <<-XML
 <project>

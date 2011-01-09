@@ -2,9 +2,9 @@ require 'rubygems'
 require 'buildr'
 require 'lib/helper'
 
-include DependencyLocking
+include TransitiveBuildr
 
-describe DependencyLocking::HelperFunctions do
+describe TransitiveBuildr::HelperFunctions do
   it 'should return a set of artifacts with version set to 0 when get_unique_group_artifact is called with a set of artifacts' do
     original_set = ['foo:bar:jar:1.0', 'bar:foo:jar:2.0']
     actual_set = HelperFunctions.get_unique_group_artifact original_set
