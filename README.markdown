@@ -6,9 +6,9 @@ This is a Buildr extension that will convert Buildr to transitively resolve depe
 2. Test dependencies, runtime dependencies and compile dependencies are added to test dependencies
 3. Runtime and test dependencies are resolved transitively.
 4. Resolving conflicts should be flexible. There's currently three ways to resolve conflicts:
-4. 1. Using a dependency lock file
-4. 2. Interactive conflict resolution (which will generate a lock file)
-4. 3. Using the highest version (this is the only way to resolve conflicts right now)
+    1. Using a dependency lock file
+    2. Interactive conflict resolution (which will generate a lock file)
+    3. Using the highest version (this is the only way to resolve conflicts right now)
 
 # Usage
 Following is an example of a buildfile that uses TransitiveBuildr
