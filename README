@@ -1,0 +1,6 @@
+This is a spike on creating a buildr extension that can transitively create a full list of dependencies with the following requirements:
+
+1) Compile dependencies along with runtime dependencies are added to runtime dependencies
+2) Test dependencies along with runtime dependencies and compile dep. are added to test dependencies
+3) The first two list must be resolved transitively
+4) Conflicts must be resolved either using the highest available version or by asking questions interactively
