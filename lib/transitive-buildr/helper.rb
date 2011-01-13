@@ -25,6 +25,11 @@ module TransitiveBuildr
         map { |artifact| Artifact.to_hash(artifact)[:version] }.
         map { |version_string| Version.new version_string}.uniq.sort.reverse
     end
+
+    def HelperFunctions.is_artifact? task
+      task.respond_to?(:to_spec) && task.respond_to?(:to_hash)
+    end
+
   end
 
   # Parses the version string and provides a natural ordering for versions
