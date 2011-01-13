@@ -54,5 +54,18 @@ XML
     actual_runtime_dependencies.should == expected_runtime_dependencies
   end
 
-  it 'should have target/classes'
+  it 'should not fail when the compile task depends on one or more file tasks' do
+    define "TestProject" do
+      extend TransitiveBuildr
+
+      file _(:target, :classes) do
+      end
+      compile.with file(_(:foo, :bar))
+      run.with 'foo:bar:jar:1.1'
+    end
+
+    expected_runtime_dependencies = [artifact('foo:bar:jar:1.1'), file(project('TestProject').path_to(:foo, :bar))]
+    actual_runtime_dependencies = project('TestProject').run.classpath
+    actual_runtime_dependencies.should == expected_runtime_dependencies
+  end
 end

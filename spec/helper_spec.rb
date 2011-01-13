@@ -20,7 +20,6 @@ describe TransitiveBuildr::HelperFunctions do
       actual_set.should == expected_set
     end
 
-    it 'should passthrough FileTasks'
   end
 
   describe 'get_all_versions' do
@@ -48,6 +47,5 @@ describe TransitiveBuildr::HelperFunctions do
       actual_versions.should == expected_versions
     end
 
-    it 'should return 0 for FileTasks'
   end
 end
