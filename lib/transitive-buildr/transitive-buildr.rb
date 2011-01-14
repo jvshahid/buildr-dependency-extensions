@@ -6,6 +6,7 @@ module TransitiveBuildr
   include Extension
 
   after_define do |project|
+    generate_pom project
     # Add the compile dependencies to the run task
     compile_dependencies = project.compile.dependencies.select {|dep| HelperFunctions.is_artifact? dep }
     runtime_dependencies = compile_dependencies + project.run.classpath
@@ -39,5 +40,70 @@ module TransitiveBuildr
       project.artifact(Artifact.to_spec(artifact_hash))
     end
     project.test.classpath = new_test_artifacts + test_file_tasks
+  end
+
+  # Private methods
+  private
+
+  def compile_dependencies project
+    project.compile.dependencies.select {|dep| HelperFunctions.is_artifact? dep}
+  end
+
+  def runtime_dependencies project
+    project.run.classpath.select {|dep| HelperFunctions.is_artifact? dep}
+  end
+
+  def test_dependencies project
+    project.test.classpath.select {|dep| HelperFunctions.is_artifact? dep}
+  end
+
+  def generate_dependencies_string dependencies, scope
+    dependencies.map do |dep|
+      <<-DEP
+    <dependency>
+      <groupId>#{dep.to_hash[:group]}</groupId>
+      <artifactId>#{dep.to_hash[:id]}</artifactId>
+      <version>#{dep.to_hash[:version]}</version>
+      <scope>#{scope}</scope>
+      <type>#{dep.to_hash[:type]}</type>
+    </dependency>
+DEP
+    end.join('\n')
+  end
+
+  def generate_pom project
+    artifact_id = project.name
+    group_id = project.group
+    version = project.version
+
+    pom_xml = <<-POM
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>#{group_id}</groupId>
+  <artifactId>#{artifact_id}</artifactId>
+  <version>#{version}</version>
+
+POM
+    compile_dependencies =  compile_dependencies project
+    runtime_dependencies =  runtime_dependencies project
+    runtime_dependencies -= compile_dependencies
+    test_dependencies    =  test_dependencies project
+    test_dependencies    -= compile_dependencies
+
+    dependencies_string = generate_dependencies_string compile_dependencies, "compile"
+    dependencies_string += generate_dependencies_string runtime_dependencies, "runtime"
+#    dependencies_string += generate_dependencies_string project.test.dependencies, "test"
+    pom_xml += "  <dependencies>\n#{dependencies_string}  </dependencies>\n" unless dependencies_string.empty?
+    pom_xml += "</project>\n"
+
+    my_pom = file(project.path_to(:target, 'pom.xml')) do |f|
+      FileUtils.mkdir_p(File.dirname(f.name)) unless f.exist?
+      File.open(f.name, 'w') do |file|
+        file.write(pom_xml)
+      end
+    end
+
+    project.package.pom.from my_pom
   end
 end
