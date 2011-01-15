@@ -37,9 +37,9 @@ XML
       compile.with 'foo:bar:jar:1.0'
     end
 
-    package = project('TestProject').package(:jar).pom
-    package.invoke
-    generated_pom = File.open(package.to_s).read
+    pom = project('TestProject').package(:jar).pom
+    pom.invoke
+    generated_pom = File.open(pom.to_s).read
     expected_pom = <<-POM
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
@@ -71,9 +71,9 @@ POM
       run.with 'foo:bar:jar:1.0'
     end
 
-    package = project('TestProject').package(:jar).pom
-    package.invoke
-    generated_pom = File.open(package.to_s).read
+    pom = project('TestProject').package(:jar).pom
+    pom.invoke
+    generated_pom = File.open(pom.to_s).read
     expected_pom = <<-POM
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
