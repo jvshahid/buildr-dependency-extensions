@@ -36,7 +36,7 @@ module TransitiveBuildr
     end
     unique_transitive_artifacts = HelperFunctions.get_unique_group_artifact(transitive_test_artifacts)
     new_test_artifacts = unique_transitive_artifacts.map do |artifact|
-      all_versions = HelperFunctions.get_all_versions artifact, transitive_runtime_artifacts
+      all_versions = HelperFunctions.get_all_versions artifact, transitive_test_artifacts
       artifact_hash = Artifact.to_hash(artifact)
       artifact_hash[:version] = version_conflict_resolver.resolve artifact, all_versions
       project.artifact(Artifact.to_spec(artifact_hash))
