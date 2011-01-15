@@ -5,7 +5,8 @@ module TransitiveBuildr
 
   include Extension
 
-  after_define do |project|
+  after_define(:compile => :'transitive-buildr')
+  after_define(:'transitive-buildr') do |project|
     # We have to run the pom generator first before we mess up the dependencies
     # A cleaner way is to store the old dependencies before we change them
     generate_pom project
