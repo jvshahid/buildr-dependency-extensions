@@ -27,7 +27,7 @@ module TransitiveBuildr
     end
     project.run.classpath = new_runtime_artifacts + runtime_file_tasks
 
-    # Add the compile dependencies to the run task
+    # Add the test dependencies to the run task
     test_dependencies = compile_dependencies + project.test.classpath
     test_file_tasks = test_dependencies.reject {|dep| HelperFunctions.is_artifact? dep }
     test_artifacts = test_dependencies - test_file_tasks
