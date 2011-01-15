@@ -97,5 +97,38 @@ POM
   end
 
 
-  it 'should add all test dependencies with test scope'
+  it 'should add all test dependencies with test scope' do
+    define "TestProject" do
+
+      extend TransitiveBuildr
+
+      project.version = '1.0-SNAPSHOT'
+      project.group = 'foo.bar'
+      test.with 'foo:bar:jar:1.0'
+    end
+
+    pom = project('TestProject').package(:jar).pom
+    pom.invoke
+    generated_pom = File.open(pom.to_s).read
+    expected_pom = <<-POM
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>foo.bar</groupId>
+  <artifactId>TestProject</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <dependencies>
+    <dependency>
+      <groupId>foo</groupId>
+      <artifactId>bar</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
+</project>
+POM
+    generated_pom.should eql expected_pom
+  end
 end
