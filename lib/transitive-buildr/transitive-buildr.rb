@@ -42,7 +42,8 @@ module TransitiveBuildr
       artifact_hash[:version] = version_conflict_resolver.resolve artifact, all_versions
       project.artifact(Artifact.to_spec(artifact_hash))
     end
-    project.test.classpath = new_test_artifacts + test_file_tasks
+    project.test.dependencies = new_test_artifacts + test_file_tasks
+    project.test.compile.dependencies = project.test.dependencies
   end
 
   # Private methods
@@ -90,13 +91,12 @@ DEP
 POM
     compile_dependencies =  compile_dependencies project
     runtime_dependencies =  runtime_dependencies project
-    runtime_dependencies -= compile_dependencies
     test_dependencies    =  test_dependencies project
-    test_dependencies    -= compile_dependencies
 
-    dependencies_string = generate_dependencies_string compile_dependencies, "compile"
+    dependencies_string =  generate_dependencies_string compile_dependencies, "compile"
     dependencies_string += generate_dependencies_string runtime_dependencies, "runtime"
-#    dependencies_string += generate_dependencies_string project.test.dependencies, "test"
+    dependencies_string += generate_dependencies_string test_dependencies, "test"
+
     pom_xml += "  <dependencies>\n#{dependencies_string}  </dependencies>\n" unless dependencies_string.empty?
     pom_xml += "</project>\n"
 
