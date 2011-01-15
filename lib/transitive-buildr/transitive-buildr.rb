@@ -29,7 +29,7 @@ module TransitiveBuildr
     project.run.classpath = new_runtime_artifacts + runtime_file_tasks
 
     # Add the test dependencies to the run task
-    test_dependencies = compile_dependencies + project.test.classpath
+    test_dependencies = compile_dependencies + project.test.dependencies
     test_file_tasks = test_dependencies.reject {|dep| HelperFunctions.is_artifact? dep }
     test_artifacts = test_dependencies - test_file_tasks
     transitive_test_artifacts = test_artifacts.inject([]) do |set, dependency|
