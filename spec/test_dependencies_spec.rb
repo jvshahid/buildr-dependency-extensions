@@ -38,7 +38,7 @@ XML
     end
 
     expected_test_dependencies = [artifact('foo:bar:jar:1.1')]
-    actual_test_dependencies = project('TestProject').test.classpath
+    actual_test_dependencies = project('TestProject').test.dependencies
     actual_test_dependencies.should == expected_test_dependencies
   end
 
