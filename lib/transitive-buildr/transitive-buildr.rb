@@ -56,7 +56,7 @@ module TransitiveBuildr
   end
 
   def test_dependencies project
-    project.test.classpath.select {|dep| HelperFunctions.is_artifact? dep}
+    project.test.dependencies.select {|dep| HelperFunctions.is_artifact? dep}
   end
 
   def generate_dependencies_string dependencies, scope
