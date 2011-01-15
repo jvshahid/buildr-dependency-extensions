@@ -68,7 +68,7 @@ POM
 
       project.version = '1.0-SNAPSHOT'
       project.group = 'foo.bar'
-      run.with 'foo:bar:jar:1.0'
+      run.with ['foo:bar:jar:1.0', 'foo:foobar:jar:1.0']
     end
 
     pom = project('TestProject').package(:jar).pom
@@ -90,12 +90,18 @@ POM
       <scope>runtime</scope>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>foo</groupId>
+      <artifactId>foobar</artifactId>
+      <version>1.0</version>
+      <scope>runtime</scope>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 </project>
 POM
     generated_pom.should eql expected_pom
   end
-
 
   it 'should add all test dependencies with test scope' do
     define "TestProject" do

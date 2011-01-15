@@ -72,7 +72,7 @@ module TransitiveBuildr
       <type>#{dep.to_hash[:type]}</type>
     </dependency>
 DEP
-    end.join('\n')
+    end.join("")
   end
 
   def generate_pom project
