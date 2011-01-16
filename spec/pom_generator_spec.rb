@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'buildr'
-require 'lib/transitive-buildr'
+require 'lib/buildr-dependency-extensions'
 
 
 describe BuildrDependencyExtensions::PomGenerator do

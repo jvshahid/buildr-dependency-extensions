@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'buildr'
-require 'lib/transitive-buildr'
+require 'lib/buildr-dependency-extensions'
 
 require File.expand_path(File.join('spec', 'spec_helpers'), Gem::GemPathSearcher.new.find('buildr').full_gem_path)
 

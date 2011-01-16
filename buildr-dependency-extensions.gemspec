@@ -1,5 +1,5 @@
 unless defined?(BuildrDependencyExtensions::VERSION)
-  require File.join(File.dirname(__FILE__), 'lib', 'transitive-buildr', 'version')
+  require File.join(File.dirname(__FILE__), 'lib', 'buildr-dependency-extensions', 'version')
 end
 
 Gem::Specification.new do |spec|
