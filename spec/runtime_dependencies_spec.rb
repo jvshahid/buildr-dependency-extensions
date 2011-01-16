@@ -30,7 +30,7 @@ XML
 
   it 'should not have duplicate artifacts' do
     define "TestProject" do
-      extend TransitiveBuildr
+      extend TransitiveDependencies
       project.version = '1.0'
 
       run.with 'foo:bar:jar:1.0'
@@ -44,7 +44,7 @@ XML
 
   it 'should have the compile task dependencies' do
     define "TestProject" do
-      extend TransitiveBuildr
+      extend TransitiveDependencies
       project.version = '1.0'
 
       compile.with 'foo:foobar:jar:1.0'
@@ -58,7 +58,7 @@ XML
 
   it 'should not fail when the compile task depends on one or more file tasks' do
     define "TestProject" do
-      extend TransitiveBuildr
+      extend TransitiveDependencies
       project.version = '1.0'
 
       file _(:target, :classes) do

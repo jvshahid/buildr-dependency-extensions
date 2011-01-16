@@ -28,7 +28,7 @@ task :install=>["#{package.package_dir}/#{package.gem_file}"] do |task|
   args = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', "#{package.package_dir}/#{package.gem_file}"
   args.unshift('sudo') if sudo_needed?
   sh *args
-  puts "[x] Installed TransitiveBuildr #{spec.version}"
+  puts "[x] Installed BuildrDependencyExtensions #{spec.version}"
 end
 
 desc "Uninstall previous rake install"
@@ -37,7 +37,7 @@ task :uninstall do |task|
   args = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'uninstall', spec.name, '--version', spec.version.to_s
   args.unshift('sudo') if sudo_needed?
   sh *args
-  puts "[x] Uninstalled TransitiveBuildr #{spec.version}"
+  puts "[x] Uninstalled BuildrDependencyExtensions #{spec.version}"
 end
 
 # We also need the other packages (JRuby if building on Ruby, and vice versa)

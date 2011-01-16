@@ -1,10 +1,10 @@
-unless defined?(TransitiveBuildr::VERSION)
+unless defined?(BuildrDependencyExtensions::VERSION)
   require File.join(File.dirname(__FILE__), 'lib', 'transitive-buildr', 'version')
 end
 
 Gem::Specification.new do |spec|
-  spec.name           = 'transitive-buildr'
-  spec.version        = TransitiveBuildr::VERSION.dup
+  spec.name           = 'buildr-dependency-extensions'
+  spec.version        = BuildrDependencyExtensions::VERSION.dup
   spec.author         = 'John Shahid'
   spec.email          = "jvshahid@gmail.com"
   spec.homepage       = "https://github.com/jvshahid/transitive-buildr"

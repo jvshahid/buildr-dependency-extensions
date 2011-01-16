@@ -2,9 +2,9 @@ require 'rubygems'
 require 'buildr'
 require 'lib/transitive-buildr'
 
-module TransitiveBuildr
+module BuildrDependencyExtensions
 
-  describe TransitiveBuildr::HelperFunctions do
+  describe HelperFunctions do
     describe 'get_unique_group_artifact' do
       it 'should return a set of artifacts with version set to 0 given a set of artifacts' do
         original_set = ['foo:bar:jar:1.0', 'bar:foo:jar:2.0']

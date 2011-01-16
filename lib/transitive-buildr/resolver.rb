@@ -1,4 +1,4 @@
-module TransitiveBuildr
+module BuildrDependencyExtensions
   class ResolverBase
     def initialize
       @hash = {}
