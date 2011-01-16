@@ -6,41 +6,65 @@ module BuildrDependencyExtensions
 
     include Extension
 
-    after_define(:'transitive-buildr' => :run) do |project|
-      # Add the compile dependencies to the run task
-      compile_dependencies = project.compile.dependencies.select {|dep| HelperFunctions.is_artifact? dep }
-      runtime_dependencies = compile_dependencies + project.run.classpath
-      runtime_file_tasks = runtime_dependencies.reject {|dep| HelperFunctions.is_artifact? dep }
-      runtime_artifacts = runtime_dependencies - runtime_file_tasks
-      transitive_runtime_artifacts = runtime_artifacts.inject([]) do |set, dependency|
-        set + project.transitive(dependency)
-      end
-      unique_transitive_artifacts = HelperFunctions.get_unique_group_artifact(transitive_runtime_artifacts)
-      version_conflict_resolver = HighestVersionConflictResolver.new
-      new_runtime_artifacts = unique_transitive_artifacts.map do |artifact|
-        all_versions = HelperFunctions.get_all_versions artifact, transitive_runtime_artifacts
-        artifact_hash = Artifact.to_hash(artifact)
-        artifact_hash[:version] = version_conflict_resolver.resolve artifact, all_versions
-        project.artifact(Artifact.to_spec(artifact_hash))
-      end
-      project.run.classpath = new_runtime_artifacts + runtime_file_tasks
+    @@conflict_resolver = HighestVersionConflictResolver.new
 
-      # Add the test dependencies to the run task
-      test_dependencies = compile_dependencies + project.test.dependencies
-      test_file_tasks = test_dependencies.reject {|dep| HelperFunctions.is_artifact? dep }
-      test_artifacts = test_dependencies - test_file_tasks
-      transitive_test_artifacts = test_artifacts.inject([]) do |set, dependency|
+    def self.extended(base)
+      class << base
+        def transitive_scopes= scopes
+          @transitive_scopes = scopes
+        end
+
+        def transitive_scopes
+          @transitive_scopes
+        end
+      end
+      super
+    end
+
+    after_define(:'transitive-dependencies' => :run) do |project|
+      if project.transitive_scopes
+        resolve_dependencies project, project.compile if project.transitive_scopes.include? :compile
+        resolve_dependencies project, project.run     if project.transitive_scopes.include? :run
+        resolve_dependencies project, project.test    if project.transitive_scopes.include? :test
+      end
+    end
+
+    module_function
+
+    def get_scope_dependencies scope_task
+      if scope_task.respond_to?(:dependencies)
+        scope_task.dependencies
+      else
+        scope_task.classpath
+      end
+    end
+
+    def set_scope_dependencies scope_task, new_dependencies
+      if scope_task.respond_to?(:dependencies=)
+        scope_task.dependencies = new_dependencies
+      else
+        scope_task.classpath = new_dependencies
+      end
+    end
+
+    def resolve_dependencies project, scope_task
+      scope_dependencies = get_scope_dependencies(scope_task)
+      scope_artifacts    = scope_dependencies.select {|dep| HelperFunctions.is_artifact? dep }
+      scope_file_tasks   = scope_dependencies.reject {|dep| HelperFunctions.is_artifact? dep }
+
+      transitive_scope_artifacts = scope_artifacts.inject([]) do |set, dependency|
         set + project.transitive(dependency)
       end
-      unique_transitive_artifacts = HelperFunctions.get_unique_group_artifact(transitive_test_artifacts)
-      new_test_artifacts = unique_transitive_artifacts.map do |artifact|
-        all_versions = HelperFunctions.get_all_versions artifact, transitive_test_artifacts
+
+      unique_transitive_artifacts = HelperFunctions.get_unique_group_artifact(transitive_scope_artifacts)
+      new_scope_artifacts = unique_transitive_artifacts.map do |artifact|
+        all_versions = HelperFunctions.get_all_versions artifact, transitive_scope_artifacts
         artifact_hash = Artifact.to_hash(artifact)
-        artifact_hash[:version] = version_conflict_resolver.resolve artifact, all_versions
+        artifact_hash[:version] = @@conflict_resolver.resolve artifact, all_versions
         project.artifact(Artifact.to_spec(artifact_hash))
       end
-      project.test.dependencies = new_test_artifacts + test_file_tasks
-      project.test.compile.dependencies = project.test.dependencies
+      new_scope_dependencies = new_scope_artifacts + scope_file_tasks
+      set_scope_dependencies(scope_task, new_scope_dependencies)
     end
   end
 end

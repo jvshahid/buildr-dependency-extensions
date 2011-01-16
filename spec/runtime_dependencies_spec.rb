@@ -31,6 +31,7 @@ XML
     define "TestProject" do
       extend TransitiveDependencies
       project.version = '1.0'
+      project.transitive_scopes = [:run]
 
       run.with 'foo:bar:jar:1.0'
       run.with 'foo:bar:jar:1.1'
@@ -46,11 +47,13 @@ XML
       extend TransitiveDependencies
       project.version = '1.0'
 
+      transitive_scopes = [:compile, :run]
+
       compile.with 'foo:foobar:jar:1.0'
       run.with 'foo:bar:jar:1.1'
     end
 
-    expected_runtime_dependencies = [artifact('foo:foobar:jar:1.0'), artifact('foo:bar:jar:1.1')]
+    expected_runtime_dependencies = [artifact('foo:bar:jar:1.1'), artifact('foo:foobar:jar:1.0')]
     actual_runtime_dependencies = project('TestProject').run.classpath
     actual_runtime_dependencies.should == expected_runtime_dependencies
   end
