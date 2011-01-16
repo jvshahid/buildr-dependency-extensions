@@ -2,7 +2,6 @@ require 'rubygems'
 require 'buildr'
 require 'lib/transitive-buildr'
 
-include TransitiveBuildr
 
 describe 'TransitiveBuildr pom generator' do
   before(:each) do
