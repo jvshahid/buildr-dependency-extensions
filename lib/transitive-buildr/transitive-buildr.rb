@@ -46,8 +46,7 @@ module TransitiveBuildr
     project.test.compile.dependencies = project.test.dependencies
   end
 
-  # Private methods
-  private
+  module_function
 
   def compile_dependencies project
     project.compile.dependencies.select {|dep| HelperFunctions.is_artifact? dep}
