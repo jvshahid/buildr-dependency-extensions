@@ -1,14 +1,13 @@
 # Introduction:
-This is a Buildr extension that will convert Buildr to transitively resolve dependencies. Transitive dependencies are only enabled for runtime and test dependencies.
+This is a Buildr extension that will convert Buildr to transitively resolve dependencies. I built it so I can easily move my projects from maven to buildr. Furthermore, there is a pom generator that can generate a complete pom including the project dependencies with the right scope. I found these tasks to be easy to carry by hand but tedious at the same time given that dependencies tend to change as the project evolve.
 
 # Goals
-1. Compile dependencies and runtime dependencies are added to runtime dependencies
-2. Test dependencies, runtime dependencies and compile dependencies are added to test dependencies
-3. Runtime and test dependencies are resolved transitively.
-4. Resolving conflicts should be flexible. There's currently three ways to resolve conflicts:
-    1. Using a dependency lock file
-    2. Interactive conflict resolution (which will generate a lock file)
-    3. Using the highest version (this is the only way to resolve conflicts right now)
+1. Runtime dependencies are resolved transitively and added to the run task dependencies
+2. Test dependencies are resolved transitively and added to the test task dependencies
+3. No two versions of the same artifact should be present in the dependencies. To resolve conflicts:
+    1. Use a dependencies version lock file
+    2. Falling back to using the highest version if the lock file didn't specify a version for the given artifact.
+4. Generate a project pom with dependencies that have the right dependencies.
 
 # Usage
 See the [Usage wiki section](https://github.com/jvshahid/transitive-buildr/wiki/Usage) for examples.
