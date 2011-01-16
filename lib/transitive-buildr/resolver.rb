@@ -1,12 +1,31 @@
 module TransitiveBuildr
+  class ResolverBase
+    def initialize
+      @hash = {}
+    end
+
+    def resolve_from_hash artifact
+      @hash[artifact]
+    end
+
+    def resolved artifact, version
+      @hash[artifact] = version
     end
   end
 
-  class HighestVersionConflictResolver
+  class HighestVersionConflictResolver < ResolverBase
     def resolve artifact, all_versions
-      all_versions = all_versions.sort.reverse.uniq
-      puts "Selecting the highest version #{all_versions[0]} for artifact #{artifact}" if all_versions.size > 0
-      all_versions[0]
+      version = resolve_from_hash artifact
+      if version
+        version
+      else
+        all_versions = all_versions.sort.reverse.uniq
+        if all_versions.size > 1
+          puts $terminal.color("Warning: found versions #{all_versions.join(', ')} for artifact #{artifact}. Chossing #{all_versions[0]}", :yellow)
+        end
+        resolved artifact, all_versions[0]
+        all_versions[0]
+      end
     end
   end
 
