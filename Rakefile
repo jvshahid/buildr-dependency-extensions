@@ -17,7 +17,7 @@
 def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
   @specs ||= ['ruby', 'java', 'x86-mswin32'].inject({}) { |hash, spec_platform|
     $platform = spec_platform
-    hash.update(spec_platform=>Gem::Specification.load('transitive-buildr.gemspec'))
+    hash.update(spec_platform=>Gem::Specification.load('buildr-dependency-extensions.gemspec'))
   }
   @specs[platform]
 end
