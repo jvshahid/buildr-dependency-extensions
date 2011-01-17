@@ -7,7 +7,7 @@ This is a Buildr extension that will convert Buildr to transitively resolve depe
 3. No two versions of the same artifact should be present in the dependencies. To resolve conflicts:
     1. Use a dependencies version lock file
     2. Falling back to using the highest version if the lock file didn't specify a version for the given artifact.
-4. Generate a project pom with dependencies that have the right dependencies.
+4. Generate a project pom with dependencies that have the right scope.
 
 # Usage
 See the [Usage wiki section](https://github.com/jvshahid/buildr-dependency-extensions/wiki) for examples.
