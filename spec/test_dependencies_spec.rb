@@ -42,6 +42,21 @@ XML
     actual_test_dependencies.should == expected_test_dependencies
   end
 
+  it 'should not have duplicate artifacts' do
+    define "TestProject" do
+      extend TransitiveDependencies
+      project.version = '1.0'
+      project.transitive_scopes = [:test]
+
+      test.with 'foo:bar:jar:1.0'
+      test.with 'foo:bar:jar:1.1'
+    end
+
+    expected_test_dependencies = [artifact('foo:bar:jar:1.1')]
+    actual_test_dependencies = project('TestProject').test.compile.dependencies
+    actual_test_dependencies.should == expected_test_dependencies
+  end
+
   it 'should have the compile task dependencies' do
     define "TestProject" do
       extend TransitiveDependencies

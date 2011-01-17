@@ -26,6 +26,7 @@ module BuildrDependencyExtensions
         resolve_dependencies project, project.compile if project.transitive_scopes.include? :compile
         resolve_dependencies project, project.run     if project.transitive_scopes.include? :run
         resolve_dependencies project, project.test    if project.transitive_scopes.include? :test
+        resolve_dependencies project, project.test.compile if project.transitive_scopes.include? :test
       end
     end
 
