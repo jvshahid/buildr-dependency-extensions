@@ -6,8 +6,6 @@ module BuildrDependencyExtensions
 
     include Extension
 
-    @@conflict_resolver = HighestVersionConflictResolver.new
-
     def self.extended(base)
       class << base
         def transitive_scopes= scopes
@@ -16,6 +14,10 @@ module BuildrDependencyExtensions
 
         def transitive_scopes
           @transitive_scopes
+        end
+
+        def conflict_resolver
+          @conflict_resolver ||= HighestVersionConflictResolver.new
         end
       end
       super
@@ -61,7 +63,7 @@ module BuildrDependencyExtensions
       new_scope_artifacts = unique_transitive_artifacts.map do |artifact|
         all_versions = HelperFunctions.get_all_versions artifact, transitive_scope_artifacts
         artifact_hash = Artifact.to_hash(artifact)
-        artifact_hash[:version] = @@conflict_resolver.resolve artifact, all_versions
+        artifact_hash[:version] = project.conflict_resolver.resolve artifact, all_versions
         project.artifact(Artifact.to_spec(artifact_hash))
       end
       new_scope_dependencies = new_scope_artifacts + scope_file_tasks
