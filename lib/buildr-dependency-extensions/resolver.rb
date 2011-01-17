@@ -9,7 +9,7 @@ module BuildrDependencyExtensions
     end
 
     def resolved artifact, version
-      @hash[artifact] = version
+      # @hash[artifact] = version
     end
   end
 
