@@ -21,7 +21,7 @@ module BuildrDependencyExtensions
       else
         all_versions = all_versions.sort.reverse.uniq
         if all_versions.size > 1
-          puts $terminal.color("Warning: found versions #{all_versions.join(', ')} for artifact #{artifact}. Chossing #{all_versions[0]}", :yellow)
+          puts $terminal.color("Warning: found versions #{all_versions.join(', ')} for artifact #{artifact}. Choosing #{all_versions[0]}", :yellow)
         end
         resolved artifact, all_versions[0]
         all_versions[0]
