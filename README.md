@@ -10,4 +10,4 @@ This is a Buildr extension that will convert Buildr to transitively resolve depe
 4. Generate a project pom with dependencies that have the right dependencies.
 
 # Usage
-See the [Usage wiki section](https://github.com/jvshahid/transitive-buildr/wiki/Usage) for examples.
+See the [Usage wiki section](https://github.com/jvshahid/buildr-dependency-extensions/wiki) for examples.
