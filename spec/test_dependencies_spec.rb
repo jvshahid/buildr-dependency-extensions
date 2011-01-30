@@ -25,6 +25,27 @@ XML
   <groupId>foo</groupId>
 </project>
 XML
+    write artifact('transitive:dependencies:jar:1.0').pom.to_s, <<-XML
+<project>
+  <artifactId>transitive</artifactId>
+  <groupId>dependencies</groupId>
+
+  <dependencies>
+    <dependency>
+      <groupId>foo</groupId>
+      <artifactId>foobar</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>foo</groupId>
+      <artifactId>bar</artifactId>
+      <version>1.0</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+</project>
+XML
   end
 
   describe 'duplicate artifact removal' do
@@ -60,8 +81,18 @@ XML
       actual_test_dependencies.should == expected_test_dependencies
     end
 
-    it 'transitively adds compile dependencies of this project test dependencies to the test dependencies'
-    it 'transitively adds runtime dependencies of this project test dependencies to the test dependencies'
+    it 'transitively adds compile dependencies and runtime dependencies of this project test dependencies to the test dependencies' do
+      define "TestProject" do
+        extend TransitiveDependencies
+        project.version = '1.0'
+        project.transitive_scopes = [:test]
+
+        test.with 'transitive:dependencies:jar:1.0'
+      end
+
+      expected_test_dependencies = [artifact('foo:foobar:jar:1.0'), artifact('foo:bar:jar:1.0'), artifact('transitive:dependencies:jar:1.0')]
+      project('TestProject').test.classpath.should ==(expected_test_dependencies)
+    end
 
     it 'should not fail when the compile task depends on one or more file tasks' do
       define "TestProject" do

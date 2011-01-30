@@ -15,6 +15,7 @@ describe 'Issue 1, mockito 1.8.1-rc1 is chosen instead of 1.8.5' do
       <groupId>org.mockito</groupId>
       <artifactId>mockito</artifactId>
       <version>1.8.1-rc1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

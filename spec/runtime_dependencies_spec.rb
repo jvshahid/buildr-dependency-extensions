@@ -25,6 +25,28 @@ XML
   <groupId>foo</groupId>
 </project>
 XML
+
+    write artifact('transitive:dependencies:jar:1.0').pom.to_s, <<-XML
+<project>
+  <artifactId>transitive</artifactId>
+  <groupId>dependencies</groupId>
+
+  <dependencies>
+    <dependency>
+      <groupId>foo</groupId>
+      <artifactId>foobar</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>foo</groupId>
+      <artifactId>bar</artifactId>
+      <version>1.0</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+</project>
+XML
   end
 
   describe 'duplicate artifact removal' do
@@ -50,19 +72,27 @@ XML
         extend TransitiveDependencies
         project.version = '1.0'
 
-        transitive_scopes = [:compile, :run]
-
         compile.with 'foo:foobar:jar:1.0'
-        run.with 'foo:bar:jar:1.1'
       end
 
-      expected_runtime_dependencies = [artifact('foo:bar:jar:1.1'), artifact('foo:foobar:jar:1.0')]
-      actual_runtime_dependencies = project('TestProject').run.classpath
-      actual_runtime_dependencies.should == expected_runtime_dependencies
+      expected_dependencies = [artifact('foo:foobar:jar:1.0')]
+      project('TestProject').run.classpath.should ==(expected_dependencies)
     end
 
-    it 'transitively adds compile dependencies of this project compile dependencies to the runtime dependencies'
-    it 'transitively adds runtime dependencies of this project runtime dependencies to the runtime dependencies'
+    it 'transitively adds compile dependencies and runtime dependencies of this project runtime dependencies to the runtime dependencies' do
+      define "TestProject" do
+        extend TransitiveDependencies
+        project.version = '1.0'
+
+        project.transitive_scopes = [:compile, :run]
+
+        run.with 'transitive:dependencies:jar:1.0'
+      end
+
+      expected_dependencies = [artifact('foo:foobar:jar:1.0'), artifact('foo:bar:jar:1.0'), artifact('transitive:dependencies:jar:1.0')]
+      project('TestProject').run.classpath.should ==(expected_dependencies)
+    end
+
     it 'transitively adds runtime dependencies of this project compile dependencies to the runtime dependencies'
 
     it 'should not fail when the compile task depends on one or more file tasks' do
@@ -77,8 +107,7 @@ XML
       end
 
       expected_runtime_dependencies = [artifact('foo:bar:jar:1.1'), file(project('TestProject').path_to(:foo, :bar))]
-      actual_runtime_dependencies = project('TestProject').run.classpath
-      actual_runtime_dependencies.should == expected_runtime_dependencies
+      project('TestProject').run.classpath.should ==(expected_runtime_dependencies)
     end
   end
 end

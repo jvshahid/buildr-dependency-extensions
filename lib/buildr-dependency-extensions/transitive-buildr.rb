@@ -8,13 +8,8 @@ module BuildrDependencyExtensions
 
     def self.extended(base)
       class << base
-        def transitive_scopes= scopes
-          @transitive_scopes = scopes
-        end
 
-        def transitive_scopes
-          @transitive_scopes
-        end
+        attr_accessor :transitive_scopes
 
         def conflict_resolver
           @conflict_resolver ||= HighestVersionConflictResolver.new
@@ -25,49 +20,66 @@ module BuildrDependencyExtensions
 
     after_define(:'transitive-dependencies' => :run) do |project|
       if project.transitive_scopes
-        resolve_dependencies project, project.compile if project.transitive_scopes.include? :compile
-        resolve_dependencies project, project.run     if project.transitive_scopes.include? :run
-        resolve_dependencies project, project.test    if project.transitive_scopes.include? :test
-        resolve_dependencies project, project.test.compile if project.transitive_scopes.include? :test
+        resolve_compile_dependencies project if project.transitive_scopes.include? :compile
+        resolve_runtime_dependencies project if project.transitive_scopes.include? :run
+        resolve_test_dependencies    project if project.transitive_scopes.include? :test
       end
     end
 
     module_function
 
-    def get_scope_dependencies scope_task
-      if scope_task.respond_to?(:dependencies)
-        scope_task.dependencies
-      else
-        scope_task.classpath
+    def resolve_compile_dependencies project
+      original_file_tasks   = project.compile.dependencies.reject {|dep| HelperFunctions.is_artifact? dep }
+      original_dependencies = project.compile.dependencies.select {|dep| HelperFunctions.is_artifact? dep }
+      new_dependencies = []
+      original_dependencies.each do |dependency|
+        add_dependency project, new_dependencies, dependency, ["compile"]
       end
+      new_dependencies = resolve_conflicts(project, new_dependencies.uniq)
+      project.compile.dependencies = new_dependencies + original_file_tasks
     end
 
-    def set_scope_dependencies scope_task, new_dependencies
-      if scope_task.respond_to?(:dependencies=)
-        scope_task.dependencies = new_dependencies
-      else
-        scope_task.classpath = new_dependencies
+    def resolve_runtime_dependencies project
+      original_file_tasks   = project.run.classpath.reject {|dep| HelperFunctions.is_artifact? dep }
+      original_dependencies = project.run.classpath.select {|dep| HelperFunctions.is_artifact? dep }
+      new_dependencies = []
+      original_dependencies.each do |dependency|
+        add_dependency project, new_dependencies, dependency, ["compile", "runtime"]
       end
+      new_dependencies = resolve_conflicts(project, new_dependencies.uniq)
+      project.run.classpath = new_dependencies + original_file_tasks
     end
 
-    def resolve_dependencies project, scope_task
-      scope_dependencies = get_scope_dependencies(scope_task)
-      scope_artifacts    = scope_dependencies.select {|dep| HelperFunctions.is_artifact? dep }
-      scope_file_tasks   = scope_dependencies.reject {|dep| HelperFunctions.is_artifact? dep }
-
-      transitive_scope_artifacts = scope_artifacts.inject([]) do |set, dependency|
-        set + project.transitive(dependency)
+    def resolve_test_dependencies project
+      original_file_tasks   = project.test.classpath.reject {|dep| HelperFunctions.is_artifact? dep }
+      original_dependencies = project.test.classpath.select {|dep| HelperFunctions.is_artifact? dep }
+      new_dependencies = []
+      original_dependencies.each do |dependency|
+        add_dependency project, new_dependencies, dependency, ["compile", "runtime"]
       end
+      new_dependencies = resolve_conflicts(project, new_dependencies.uniq)
+      project.test.classpath = new_dependencies + original_file_tasks
+    end
 
-      unique_transitive_artifacts = HelperFunctions.get_unique_group_artifact(transitive_scope_artifacts)
+    def add_dependency project, new_dependencies, dependency, scopes
+      scopes.each do |scope|
+        POM.load(dependency.pom).dependencies(scope).each do |dep|
+          artifact = project.artifact(dep)
+          add_dependency project, new_dependencies, artifact, scopes
+        end
+      end
+      new_dependencies << dependency
+    end
+
+    def resolve_conflicts project, dependencies
+      unique_transitive_artifacts = HelperFunctions.get_unique_group_artifact(dependencies)
       new_scope_artifacts = unique_transitive_artifacts.map do |artifact|
-        all_versions = HelperFunctions.get_all_versions artifact, transitive_scope_artifacts
+        all_versions = HelperFunctions.get_all_versions artifact, dependencies
         artifact_hash = Artifact.to_hash(artifact)
         artifact_hash[:version] = project.conflict_resolver.resolve artifact, all_versions
         project.artifact(Artifact.to_spec(artifact_hash))
       end
-      new_scope_dependencies = new_scope_artifacts + scope_file_tasks
-      set_scope_dependencies(scope_task, new_scope_dependencies)
+      new_scope_artifacts
     end
   end
 end
