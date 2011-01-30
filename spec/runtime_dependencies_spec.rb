@@ -93,7 +93,19 @@ XML
       project('TestProject').run.classpath.should ==(expected_dependencies)
     end
 
-    it 'transitively adds runtime dependencies of this project compile dependencies to the runtime dependencies'
+    it 'transitively adds runtime dependencies of this project compile dependencies to the runtime dependencies' do
+      define "TestProject" do
+        extend TransitiveDependencies
+        project.version = '1.0'
+
+        project.transitive_scopes = [:compile, :run]
+
+        compile.with 'transitive:dependencies:jar:1.0'
+      end
+
+      expected_dependencies = [artifact('foo:foobar:jar:1.0'), artifact('foo:bar:jar:1.0'), artifact('transitive:dependencies:jar:1.0')]
+      project('TestProject').run.classpath.should ==(expected_dependencies)
+    end
 
     it 'should not fail when the compile task depends on one or more file tasks' do
       define "TestProject" do
