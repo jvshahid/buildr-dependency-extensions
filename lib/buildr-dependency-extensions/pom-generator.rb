@@ -1,4 +1,6 @@
 require 'buildr/core/project'
+require 'rubygems'
+require 'xmlsimple'
 
 module BuildrDependencyExtensions
   module PomGenerator
@@ -26,49 +28,40 @@ module BuildrDependencyExtensions
       project.test.dependencies.select {|dep| HelperFunctions.is_artifact? dep}
     end
 
-    def generate_dependencies_string dependencies, scope
+    def generate_dependencies_hash dependencies, scope
       dependencies.map do |dep|
-        <<-DEP
-    <dependency>
-      <groupId>#{dep.to_hash[:group]}</groupId>
-      <artifactId>#{dep.to_hash[:id]}</artifactId>
-      <version>#{dep.to_hash[:version]}</version>
-      <scope>#{scope}</scope>
-      <type>#{dep.to_hash[:type]}</type>
-    </dependency>
-DEP
-      end.join("")
+        {'dependency' =>
+          { 'groupId'    => dep.to_hash[:group],
+            'artifactId' => dep.to_hash[:id],
+            'version'    => dep.to_hash[:version],
+            'scope'      => scope,
+            'type'       => dep.to_hash[:type]
+          }
+        }
+      end
     end
 
     def generate_pom project
-      artifact_id = project.name
-      group_id = project.group
-      version = project.version
-
-      pom_xml = <<-POM
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>#{group_id}</groupId>
-  <artifactId>#{artifact_id}</artifactId>
-  <version>#{version}</version>
-
-POM
       compile_dependencies =  compile_dependencies project
       runtime_dependencies =  runtime_dependencies project
-      test_dependencies    =  test_dependencies project
+      test_dependencies    =  test_dependencies    project
 
-      dependencies_string =  generate_dependencies_string compile_dependencies, "compile"
-      dependencies_string += generate_dependencies_string runtime_dependencies, "runtime"
-      dependencies_string += generate_dependencies_string test_dependencies, "test"
+      dependencies_hashes  = generate_dependencies_hash compile_dependencies, 'compile'
+      dependencies_hashes += generate_dependencies_hash runtime_dependencies, 'runtime'
+      dependencies_hashes += generate_dependencies_hash test_dependencies,    'test'
 
-      pom_xml += "  <dependencies>\n#{dependencies_string}  </dependencies>\n" unless dependencies_string.empty?
-      pom_xml += "</project>\n"
+      pom_hash = {
+        'modelVersion' => '4.0.0',
+        'groupId'      => project.group,
+        'artifactId'   => project.name,
+        'version'      => project.version,
+        'dependencies' => dependencies_hashes.to_a
+      }
 
       my_pom = file(project.path_to(:target, 'pom.xml')) do |f|
         FileUtils.mkdir_p(File.dirname(f.name)) unless f.exist?
         File.open(f.name, 'w') do |file|
-          file.write(pom_xml)
+          file.write(XmlSimple.xml_out(pom_hash, {'RootName' => 'project', 'NoAttr' => true}))
         end
       end
 

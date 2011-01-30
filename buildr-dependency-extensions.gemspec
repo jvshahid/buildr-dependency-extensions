@@ -1,4 +1,4 @@
-unless defined?(BuildrDependencyExtensions::VERSION)
+unless defined?(BuildrDepenencyExtensions::VERSION)
   require File.join(File.dirname(__FILE__), 'lib', 'buildr-dependency-extensions', 'version')
 end
 
@@ -20,7 +20,8 @@ Gem::Specification.new do |spec|
   spec.has_rdoc         = false
 
   # Tested against these dependencies.
-  spec.add_dependency 'rake',                 '0.8.7'
-  spec.add_dependency 'buildr',              '>= 1.4.4'
-  spec.add_dependency 'rspec',                '~> 1.3.1'
+  spec.add_dependency 'rake',       '0.8.7'
+  spec.add_dependency 'buildr',     '>= 1.4.4'
+  spec.add_dependency 'rspec',      '~> 1.3.1'
+  spec.add_dependency 'xml-simple', '~> 1.0.14'
 end

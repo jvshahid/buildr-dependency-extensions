@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'buildr'
+require 'xmlsimple'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib/buildr-dependency-extensions'))
 
 
@@ -38,17 +39,14 @@ XML
 
     pom = project('TestProject').package(:jar).pom
     pom.invoke
-    generated_pom = File.open(pom.to_s).read
-    expected_pom = <<-POM
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>foo.bar</groupId>
-  <artifactId>TestProject</artifactId>
-  <version>1.0-SNAPSHOT</version>
-</project>
-POM
-    generated_pom.should eql expected_pom
+    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => false})
+    expected_pom_hash = {
+      'modelVersion' => '4.0.0',
+      'groupId'      => 'foo.bar',
+      'artifactId'   => 'TestProject',
+      'version'      => '1.0-SNAPSHOT'
+    }
+    generated_pom_hash.should eql expected_pom_hash
   end
 
   it 'should add all compile dependencies with compile scope' do
@@ -62,27 +60,23 @@ POM
 
     pom = project('TestProject').package(:jar).pom
     pom.invoke
-    generated_pom = File.open(pom.to_s).read
-    expected_pom = <<-POM
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>foo.bar</groupId>
-  <artifactId>TestProject</artifactId>
-  <version>1.0-SNAPSHOT</version>
-
-  <dependencies>
-    <dependency>
-      <groupId>foo</groupId>
-      <artifactId>bar</artifactId>
-      <version>1.0</version>
-      <scope>compile</scope>
-      <type>jar</type>
-    </dependency>
-  </dependencies>
-</project>
-POM
-    generated_pom.should eql expected_pom
+    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => ['dependencies']})
+    expected_pom_hash = {
+      'modelVersion' => '4.0.0',
+      'groupId'      => 'foo.bar',
+      'artifactId'   => 'TestProject',
+      'version'      => '1.0-SNAPSHOT',
+      'dependencies' =>
+      [{ 'dependency' => {
+           'groupId'    => 'foo',
+           'artifactId' => 'bar',
+           'version'    => '1.0',
+           'scope'      => 'compile',
+           'type'       => 'jar'
+         }
+       }]
+    }
+    generated_pom_hash.should eql expected_pom_hash
   end
 
   it 'should add all runtime dependencies with runtime scope' do
@@ -96,34 +90,31 @@ POM
 
     pom = project('TestProject').package(:jar).pom
     pom.invoke
-    generated_pom = File.open(pom.to_s).read
-    expected_pom = <<-POM
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>foo.bar</groupId>
-  <artifactId>TestProject</artifactId>
-  <version>1.0-SNAPSHOT</version>
-
-  <dependencies>
-    <dependency>
-      <groupId>foo</groupId>
-      <artifactId>bar</artifactId>
-      <version>1.0</version>
-      <scope>runtime</scope>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>foo</groupId>
-      <artifactId>foobar</artifactId>
-      <version>1.0</version>
-      <scope>runtime</scope>
-      <type>jar</type>
-    </dependency>
-  </dependencies>
-</project>
-POM
-    generated_pom.should eql expected_pom
+    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => ['dependencies']})
+    expected_pom_hash = {
+      'modelVersion' => '4.0.0',
+      'groupId'      => 'foo.bar',
+      'artifactId'   => 'TestProject',
+      'version'      => '1.0-SNAPSHOT',
+      'dependencies' =>
+      [{ 'dependency' => {
+           'groupId'    => 'foo',
+           'artifactId' => 'bar',
+           'version'    => '1.0',
+           'scope'      => 'runtime',
+           'type'       => 'jar'
+         }
+       },
+       {  'dependency' => {
+           'groupId'    => 'foo',
+           'artifactId' => 'foobar',
+           'version'    => '1.0',
+           'scope'      => 'runtime',
+           'type'       => 'jar'
+         }
+       }]
+    }
+    generated_pom_hash.should eql expected_pom_hash
   end
 
   it 'should add all test dependencies with test scope' do
@@ -137,26 +128,22 @@ POM
 
     pom = project('TestProject').package(:jar).pom
     pom.invoke
-    generated_pom = File.open(pom.to_s).read
-    expected_pom = <<-POM
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>foo.bar</groupId>
-  <artifactId>TestProject</artifactId>
-  <version>1.0-SNAPSHOT</version>
-
-  <dependencies>
-    <dependency>
-      <groupId>foo</groupId>
-      <artifactId>bar</artifactId>
-      <version>1.0</version>
-      <scope>test</scope>
-      <type>jar</type>
-    </dependency>
-  </dependencies>
-</project>
-POM
-    generated_pom.should eql expected_pom
+    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => ['dependencies']})
+    expected_pom_hash = {
+      'modelVersion' => '4.0.0',
+      'groupId'      => 'foo.bar',
+      'artifactId'   => 'TestProject',
+      'version'      => '1.0-SNAPSHOT',
+      'dependencies' =>
+      [{ 'dependency' => {
+           'groupId'    => 'foo',
+           'artifactId' => 'bar',
+           'version'    => '1.0',
+           'scope'      => 'test',
+           'type'       => 'jar'
+         }
+       }]
+    }
+    generated_pom_hash.should eql expected_pom_hash
   end
 end
