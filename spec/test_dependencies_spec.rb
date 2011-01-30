@@ -60,8 +60,8 @@ XML
       end
 
       expected_test_dependencies = [artifact('foo:bar:jar:1.1')]
-      actual_test_dependencies = project('TestProject').test.dependencies
-      actual_test_dependencies.should == expected_test_dependencies
+      project('TestProject').test.dependencies.should == expected_test_dependencies
+      project('TestProject').test.compile.dependencies.should == expected_test_dependencies
     end
   end
 
@@ -77,8 +77,8 @@ XML
       end
 
       expected_test_dependencies = [artifact('foo:bar:jar:1.1'), artifact('foo:foobar:jar:1.0')]
-      actual_test_dependencies = project('TestProject').test.classpath
-      actual_test_dependencies.should == expected_test_dependencies
+      project('TestProject').test.classpath.should == expected_test_dependencies
+      project('TestProject').test.compile.classpath.should == expected_test_dependencies
     end
 
     it 'transitively adds compile dependencies and runtime dependencies of this project test dependencies to the test dependencies' do
@@ -92,6 +92,7 @@ XML
 
       expected_test_dependencies = [artifact('foo:foobar:jar:1.0'), artifact('foo:bar:jar:1.0'), artifact('transitive:dependencies:jar:1.0')]
       project('TestProject').test.classpath.should ==(expected_test_dependencies)
+      project('TestProject').test.compile.classpath.should ==(expected_test_dependencies)
     end
 
     it 'should not fail when the compile task depends on one or more file tasks' do
@@ -106,8 +107,8 @@ XML
       end
 
       expected_test_dependencies = [artifact('foo:bar:jar:1.1'), file(project('TestProject').path_to(:foo, :bar))]
-      actual_test_dependencies = project('TestProject').test.classpath
-      actual_test_dependencies.should == expected_test_dependencies
+      project('TestProject').test.classpath.should ==(expected_test_dependencies)
+      project('TestProject').test.compile.classpath.should ==(expected_test_dependencies)
     end
   end
 end

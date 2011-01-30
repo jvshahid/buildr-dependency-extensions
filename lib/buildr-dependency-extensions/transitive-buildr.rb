@@ -52,14 +52,16 @@ module BuildrDependencyExtensions
     end
 
     def resolve_test_dependencies project
-      original_file_tasks   = project.test.classpath.reject {|dep| HelperFunctions.is_artifact? dep }
-      original_dependencies = project.test.classpath.select {|dep| HelperFunctions.is_artifact? dep }
+      original_file_tasks   = project.test.dependencies.reject {|dep| HelperFunctions.is_artifact? dep }
+      original_test_compile_file_tasks = project.test.compile.dependencies.reject {|dep| HelperFunctions.is_artifact? dep }
+      original_dependencies = project.test.dependencies.select {|dep| HelperFunctions.is_artifact? dep }
       new_dependencies = []
       original_dependencies.each do |dependency|
         add_dependency project, new_dependencies, dependency, [nil, "compile", "runtime"]
       end
       new_dependencies = resolve_conflicts(project, new_dependencies.uniq)
-      project.test.classpath = new_dependencies + original_file_tasks
+      project.test.dependencies = new_dependencies + original_file_tasks
+      project.test.compile.dependencies = new_dependencies + original_test_compile_file_tasks
     end
 
     def add_dependency project, new_dependencies, dependency, scopes, depth = 0
