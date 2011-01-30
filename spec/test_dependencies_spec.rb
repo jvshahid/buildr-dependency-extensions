@@ -27,64 +27,56 @@ XML
 XML
   end
 
-  it 'should not have duplicate artifacts' do
-    define "TestProject" do
-      extend TransitiveDependencies
-      project.version = '1.0'
-      project.transitive_scopes = [:test]
+  describe 'duplicate artifact removal' do
+    it 'should not have duplicate artifacts' do
+      define "TestProject" do
+        extend TransitiveDependencies
+        project.version = '1.0'
+        project.transitive_scopes = [:test]
 
-      test.with 'foo:bar:jar:1.0'
-      test.with 'foo:bar:jar:1.1'
-    end
-
-    expected_test_dependencies = [artifact('foo:bar:jar:1.1')]
-    actual_test_dependencies = project('TestProject').test.dependencies
-    actual_test_dependencies.should == expected_test_dependencies
-  end
-
-  it 'should not have duplicate artifacts' do
-    define "TestProject" do
-      extend TransitiveDependencies
-      project.version = '1.0'
-      project.transitive_scopes = [:test]
-
-      test.with 'foo:bar:jar:1.0'
-      test.with 'foo:bar:jar:1.1'
-    end
-
-    expected_test_dependencies = [artifact('foo:bar:jar:1.1')]
-    actual_test_dependencies = project('TestProject').test.compile.dependencies
-    actual_test_dependencies.should == expected_test_dependencies
-  end
-
-  it 'should have the compile task dependencies' do
-    define "TestProject" do
-      extend TransitiveDependencies
-      project.version = '1.0'
-      project.transitive_scopes = [:compile, :test]
-
-      compile.with 'foo:foobar:jar:1.0'
-      test.with 'foo:bar:jar:1.1'
-    end
-
-    expected_test_dependencies = [artifact('foo:bar:jar:1.1'), artifact('foo:foobar:jar:1.0')]
-    actual_test_dependencies = project('TestProject').test.classpath
-    actual_test_dependencies.should == expected_test_dependencies
-  end
-
-  it 'should not fail when the compile task depends on one or more file tasks' do
-    define "TestProject" do
-      extend TransitiveDependencies
-      project.version = '1.0'
-
-      file _(:target, :classes) do
+        test.with 'foo:bar:jar:1.0'
+        test.with 'foo:bar:jar:1.1'
       end
-      compile.with file(_(:foo, :bar))
-      test.with 'foo:bar:jar:1.1'
+
+      expected_test_dependencies = [artifact('foo:bar:jar:1.1')]
+      actual_test_dependencies = project('TestProject').test.dependencies
+      actual_test_dependencies.should == expected_test_dependencies
+    end
+  end
+
+  describe 'maven describe mechanism' do
+    it 'adds compile dependencies of this project to the test dependencies' do
+      define "TestProject" do
+        extend TransitiveDependencies
+        project.version = '1.0'
+        project.transitive_scopes = [:compile, :test]
+
+        compile.with 'foo:foobar:jar:1.0'
+        test.with 'foo:bar:jar:1.1'
+      end
+
+      expected_test_dependencies = [artifact('foo:bar:jar:1.1'), artifact('foo:foobar:jar:1.0')]
+      actual_test_dependencies = project('TestProject').test.classpath
+      actual_test_dependencies.should == expected_test_dependencies
     end
 
-    expected_test_dependencies = [artifact('foo:bar:jar:1.1'), file(project('TestProject').path_to(:foo, :bar))]
-    actual_test_dependencies = project('TestProject').test.classpath
-    actual_test_dependencies.should == expected_test_dependencies
+    it 'transitively adds compile dependencies of this project test dependencies to the test dependencies'
+    it 'transitively adds runtime dependencies of this project test dependencies to the test dependencies'
+
+    it 'should not fail when the compile task depends on one or more file tasks' do
+      define "TestProject" do
+        extend TransitiveDependencies
+        project.version = '1.0'
+
+        file _(:target, :classes) do
+        end
+        compile.with file(_(:foo, :bar))
+        test.with 'foo:bar:jar:1.1'
+      end
+
+      expected_test_dependencies = [artifact('foo:bar:jar:1.1'), file(project('TestProject').path_to(:foo, :bar))]
+      actual_test_dependencies = project('TestProject').test.classpath
+      actual_test_dependencies.should == expected_test_dependencies
+    end
   end
 end
