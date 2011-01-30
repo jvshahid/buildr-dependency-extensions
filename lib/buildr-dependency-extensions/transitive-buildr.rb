@@ -12,7 +12,8 @@ module BuildrDependencyExtensions
         attr_accessor :transitive_scopes
 
         def conflict_resolver
-          @conflict_resolver ||= HighestVersionConflictResolver.new
+          # @conflict_resolver ||= HighestVersionConflictResolver.new
+          @conflict_resolver ||= MavenVersionConflictResolver.new
         end
       end
       super
@@ -61,22 +62,22 @@ module BuildrDependencyExtensions
       project.test.classpath = new_dependencies + original_file_tasks
     end
 
-    def add_dependency project, new_dependencies, dependency, scopes
+    def add_dependency project, new_dependencies, dependency, scopes, depth = 0
       scopes.each do |scope|
         POM.load(dependency.pom).dependencies(scope).each do |dep|
           artifact = project.artifact(dep)
-          add_dependency project, new_dependencies, artifact, scopes
+          add_dependency project, new_dependencies, artifact, scopes, (depth + 1)
         end
       end
+      dependency.depth = depth
       new_dependencies << dependency
     end
 
     def resolve_conflicts project, dependencies
       unique_transitive_artifacts = HelperFunctions.get_unique_group_artifact(dependencies)
       new_scope_artifacts = unique_transitive_artifacts.map do |artifact|
-        all_versions = HelperFunctions.get_all_versions artifact, dependencies
         artifact_hash = Artifact.to_hash(artifact)
-        artifact_hash[:version] = project.conflict_resolver.resolve artifact, all_versions
+        artifact_hash[:version] = project.conflict_resolver.resolve(artifact, dependencies)
         project.artifact(Artifact.to_spec(artifact_hash))
       end
       new_scope_artifacts

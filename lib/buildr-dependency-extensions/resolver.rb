@@ -14,12 +14,12 @@ module BuildrDependencyExtensions
   end
 
   class HighestVersionConflictResolver < ResolverBase
-    def resolve artifact, all_versions
+    def resolve artifact, all_artifacts
       version = resolve_from_hash artifact
       if version
         version
       else
-        all_versions = all_versions.sort.reverse.uniq
+        all_versions = HelperFunctions.get_all_versions(artifact, all_artifacts).uniq
         if all_versions.size > 1
           puts $terminal.color("Warning: found versions #{all_versions.join(', ')} for artifact #{artifact}. Choosing #{all_versions[0]}", :yellow)
         end
@@ -29,6 +29,16 @@ module BuildrDependencyExtensions
     end
   end
 
-  class DependencyLockFileConflictResolver
+  class MavenVersionConflictResolver < ResolverBase
+    def resolve artifact, all_artifacts
+      version = resolve_from_hash artifact
+      if version
+        version
+      else
+        all_versions = HelperFunctions.get_all_versions_sorted_by_depth(artifact, all_artifacts).uniq
+        resolved artifact, all_versions[0]
+        all_versions[0]
+      end
+    end
   end
 end

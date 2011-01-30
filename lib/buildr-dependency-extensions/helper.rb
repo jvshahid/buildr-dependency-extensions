@@ -20,9 +20,30 @@ module BuildrDependencyExtensions
           candidate_hash[:classifier] == original_artifact_hash[:classifier]
       end
 
+      new_set = new_set.uniq.sort.reverse
       new_set.
         map { |artifact| Artifact.to_hash(artifact)[:version] }.
-        map { |version_string| Version.new version_string}.uniq.sort.reverse
+        map { |version_string| Version.new version_string}
+    end
+
+    def HelperFunctions.get_all_versions_sorted_by_depth artifact, original_set
+      original_artifact_hash = Artifact.to_hash(artifact)
+
+      new_set = original_set.select do |candidate_artifact|
+        candidate_hash = Artifact.to_hash(candidate_artifact)
+        candidate_hash[:group] == original_artifact_hash[:group] &&
+          candidate_hash[:id] == original_artifact_hash[:id]  &&
+          candidate_hash[:type] == original_artifact_hash[:type] &&
+          candidate_hash[:classifier] == original_artifact_hash[:classifier]
+      end
+
+      new_set = new_set.uniq
+      # Sort using the version first, so in case of conflict we use the higher version
+      new_set = new_set.sort {|x,y| Version.new(x.to_hash[:version]) <=> Version.new(x.to_hash[:version])}.reverse
+      new_set = new_set.sort {|x,y| x.depth <=> y.depth}
+      new_set.
+        map { |artifact| Artifact.to_hash(artifact)[:version] }.
+        map { |version_string| Version.new version_string}
     end
 
     def HelperFunctions.is_artifact? task
