@@ -146,4 +146,43 @@ XML
     }
     generated_pom_hash.should eql expected_pom_hash
   end
+
+
+  it 'adds all extra pom sections to the generated pom' do
+    define "TestProject" do
+      extend PomGenerator
+
+      project.version = '1.0-SNAPSHOT'
+      project.group = 'foo.bar'
+      test.with 'foo:bar:jar:1.0'
+
+      project.extra_pom_sections['plugins'] =  [{'plugin' => {'groupId' => 'foo', 'artifactId' => 'bar'}}]
+    end
+
+    pom = project('TestProject').package(:jar).pom
+    pom.invoke
+    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => ['dependencies', 'plugins']})
+    expected_pom_hash = {
+      'modelVersion' => '4.0.0',
+      'groupId'      => 'foo.bar',
+      'artifactId'   => 'TestProject',
+      'version'      => '1.0-SNAPSHOT',
+      'dependencies' =>
+      [{ 'dependency' => {
+           'groupId'    => 'foo',
+           'artifactId' => 'bar',
+           'version'    => '1.0',
+           'scope'      => 'test',
+           'type'       => 'jar'
+         }
+       }],
+      'plugins' =>
+      [{ 'plugin' => {
+           'groupId'    => 'foo',
+           'artifactId' => 'bar'
+         }
+       }]
+    }
+    generated_pom_hash.should eql expected_pom_hash
+  end
 end

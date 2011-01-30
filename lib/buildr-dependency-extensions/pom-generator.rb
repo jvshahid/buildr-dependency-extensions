@@ -7,6 +7,15 @@ module BuildrDependencyExtensions
 
     include Extension
 
+    def self.extended(base)
+      class << base
+        def extra_pom_sections
+          @extra_pom_sections ||= {}
+        end
+      end
+      super
+    end
+
     # We have to run the pom generator first before the dependencies are
     # changed in the compile, test and run after_define
     after_define(:compile => :'pom-generator')
@@ -57,6 +66,8 @@ module BuildrDependencyExtensions
         'version'      => project.version,
         'dependencies' => dependencies_hashes.to_a
       }
+
+      project.extra_pom_sections.each {|key, value| pom_hash[key] = value}
 
       my_pom = file(project.path_to(:target, 'pom.xml')) do |f|
         FileUtils.mkdir_p(File.dirname(f.name)) unless f.exist?
