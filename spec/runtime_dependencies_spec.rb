@@ -107,6 +107,20 @@ XML
       project('TestProject').run.classpath.should ==(expected_dependencies)
     end
 
+    it 'does not include dependencies contained in the artifact excludes' do
+      define "TestProject" do
+        extend TransitiveDependencies
+        project.version = '1.0'
+
+        project.transitive_scopes = [:run]
+
+        run.with artifact('transitive:dependencies:jar:1.0').excludes(artifact('foo:bar:jar:1.0'), artifact('foo:foobar:jar:1.0'))
+      end
+
+      expected_dependencies = [artifact('transitive:dependencies:jar:1.0')]
+      project('TestProject').run.classpath.should ==(expected_dependencies)
+    end
+
     it 'should not fail when the compile task depends on one or more file tasks' do
       define "TestProject" do
         extend TransitiveDependencies

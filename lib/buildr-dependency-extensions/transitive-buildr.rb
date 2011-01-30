@@ -66,7 +66,12 @@ module BuildrDependencyExtensions
       scopes.each do |scope|
         POM.load(dependency.pom).dependencies(scope).each do |dep|
           artifact = project.artifact(dep)
-          add_dependency project, new_dependencies, artifact, scopes, (depth + 1)
+          excludes = dependency.instance_variable_get(:@excludes) || []
+          matching_dependency = excludes.select do |excluded_dep|
+            excluded_dep.to_hash[:id] == artifact.to_hash[:id] &&
+              excluded_dep.to_hash[:group] == artifact.to_hash[:group]
+          end
+          add_dependency project, new_dependencies, artifact, scopes, (depth + 1) if matching_dependency.empty?
         end
       end
       dependency.depth = depth
