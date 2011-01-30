@@ -36,7 +36,8 @@ XML
       <groupId>foo</groupId>
       <artifactId>foobar</artifactId>
       <version>1.0</version>
-      <scope>compile</scope>
+      <!-- scope is compile by default -->
+      <!-- <scope>compile</scope> -->
     </dependency>
     <dependency>
       <groupId>foo</groupId>

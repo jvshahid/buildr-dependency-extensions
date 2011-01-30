@@ -34,7 +34,7 @@ module BuildrDependencyExtensions
       original_dependencies = project.compile.dependencies.select {|dep| HelperFunctions.is_artifact? dep }
       new_dependencies = []
       original_dependencies.each do |dependency|
-        add_dependency project, new_dependencies, dependency, ["compile"]
+        add_dependency project, new_dependencies, dependency, [nil, "compile"]
       end
       new_dependencies = resolve_conflicts(project, new_dependencies.uniq)
       project.compile.dependencies = new_dependencies + original_file_tasks
@@ -45,7 +45,7 @@ module BuildrDependencyExtensions
       original_dependencies = project.run.classpath.select {|dep| HelperFunctions.is_artifact? dep }
       new_dependencies = []
       original_dependencies.each do |dependency|
-        add_dependency project, new_dependencies, dependency, ["compile", "runtime"]
+        add_dependency project, new_dependencies, dependency, [nil, "compile", "runtime"]
       end
       new_dependencies = resolve_conflicts(project, new_dependencies.uniq)
       project.run.classpath = new_dependencies + original_file_tasks
@@ -56,7 +56,7 @@ module BuildrDependencyExtensions
       original_dependencies = project.test.classpath.select {|dep| HelperFunctions.is_artifact? dep }
       new_dependencies = []
       original_dependencies.each do |dependency|
-        add_dependency project, new_dependencies, dependency, ["compile", "runtime"]
+        add_dependency project, new_dependencies, dependency, [nil, "compile", "runtime"]
       end
       new_dependencies = resolve_conflicts(project, new_dependencies.uniq)
       project.test.classpath = new_dependencies + original_file_tasks
@@ -64,7 +64,7 @@ module BuildrDependencyExtensions
 
     def add_dependency project, new_dependencies, dependency, scopes, depth = 0
       scopes.each do |scope|
-        POM.load(dependency.pom).dependencies(scope).each do |dep|
+        POM.load(dependency.pom).dependencies([scope]).each do |dep|
           artifact = project.artifact(dep)
           excludes = dependency.instance_variable_get(:@excludes) || []
           matching_dependency = excludes.select do |excluded_dep|
