@@ -4,6 +4,8 @@ require 'yaml'
 module BuildrDependencyExtensions
   module TransitiveDependencies
 
+    @dependency_pom_cache = {}
+
     include Extension
 
     def self.extended(base)
@@ -66,7 +68,10 @@ module BuildrDependencyExtensions
 
     def add_dependency project, new_dependencies, dependency, scopes, depth = 0
       scopes.each do |scope|
-        POM.load(dependency.pom).dependencies([scope]).each do |dep|
+        if (!@dependency_pom_cache[dependency])
+          @dependency_pom_cache[dependency] = POM.load(dependency.pom)
+        end
+        @dependency_pom_cache[dependency].dependencies([scope]).each do |dep|
           artifact = project.artifact(dep)
           excludes = dependency.instance_variable_get(:@excludes) || []
           matching_dependency = excludes.select do |excluded_dep|
