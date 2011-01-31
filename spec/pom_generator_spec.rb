@@ -89,30 +89,29 @@ XML
     end
 
     pom = project('TestProject').package(:jar).pom
-    pom.invoke
-    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => ['dependencies']})
+    p File.read(pom.to_s)
+    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => ['dependency', 'plugin']})
     expected_pom_hash = {
       'modelVersion' => '4.0.0',
       'groupId'      => 'foo.bar',
       'artifactId'   => 'TestProject',
       'version'      => '1.0-SNAPSHOT',
-      'dependencies' =>
-      [{ 'dependency' => {
+      'dependencies' => { 'dependency' =>
+        [{
            'groupId'    => 'foo',
            'artifactId' => 'bar',
            'version'    => '1.0',
            'scope'      => 'runtime',
            'type'       => 'jar'
-         }
-       },
-       {  'dependency' => {
+         },
+         {
            'groupId'    => 'foo',
            'artifactId' => 'foobar',
            'version'    => '1.0',
            'scope'      => 'runtime',
            'type'       => 'jar'
-         }
-       }]
+         }]
+      }
     }
     generated_pom_hash.should eql expected_pom_hash
   end
@@ -128,21 +127,21 @@ XML
 
     pom = project('TestProject').package(:jar).pom
     pom.invoke
-    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => ['dependencies']})
+    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => ['dependency', 'plugin']})
     expected_pom_hash = {
       'modelVersion' => '4.0.0',
       'groupId'      => 'foo.bar',
       'artifactId'   => 'TestProject',
       'version'      => '1.0-SNAPSHOT',
-      'dependencies' =>
-      [{ 'dependency' => {
+      'dependencies' => { 'dependency' =>
+        [{
            'groupId'    => 'foo',
            'artifactId' => 'bar',
            'version'    => '1.0',
            'scope'      => 'test',
            'type'       => 'jar'
-         }
-       }]
+         }]
+       }
     }
     generated_pom_hash.should eql expected_pom_hash
   end
@@ -161,27 +160,27 @@ XML
 
     pom = project('TestProject').package(:jar).pom
     pom.invoke
-    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => ['dependencies', 'plugins']})
+    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => ['dependency', 'plugin']})
     expected_pom_hash = {
       'modelVersion' => '4.0.0',
       'groupId'      => 'foo.bar',
       'artifactId'   => 'TestProject',
       'version'      => '1.0-SNAPSHOT',
-      'dependencies' =>
-      [{ 'dependency' => {
+      'dependencies' => { 'dependency' =>
+        [{
            'groupId'    => 'foo',
            'artifactId' => 'bar',
            'version'    => '1.0',
            'scope'      => 'test',
            'type'       => 'jar'
-         }
-       }],
-      'plugins' =>
-      [{ 'plugin' => {
+         }]
+      },
+      'plugins' => { 'plugin' =>
+        [{
            'groupId'    => 'foo',
            'artifactId' => 'bar'
-         }
-       }]
+         }]
+       }
     }
     generated_pom_hash.should eql expected_pom_hash
   end

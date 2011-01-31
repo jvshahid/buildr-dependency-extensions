@@ -39,13 +39,11 @@ module BuildrDependencyExtensions
 
     def generate_dependencies_hash dependencies, scope
       dependencies.map do |dep|
-        {'dependency' =>
-          { 'groupId'    => dep.to_hash[:group],
-            'artifactId' => dep.to_hash[:id],
-            'version'    => dep.to_hash[:version],
-            'scope'      => scope,
-            'type'       => dep.to_hash[:type]
-          }
+        { 'groupId'    => dep.to_hash[:group],
+          'artifactId' => dep.to_hash[:id],
+          'version'    => dep.to_hash[:version],
+          'scope'      => scope,
+          'type'       => dep.to_hash[:type]
         }
       end
     end
@@ -64,7 +62,7 @@ module BuildrDependencyExtensions
         'groupId'      => project.group,
         'artifactId'   => project.name,
         'version'      => project.version,
-        'dependencies' => dependencies_hashes.to_a
+        'dependencies' => {'dependency' => dependencies_hashes.to_a}
       }
 
       project.extra_pom_sections.each {|key, value| pom_hash[key] = value}
