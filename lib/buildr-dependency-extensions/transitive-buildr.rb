@@ -71,7 +71,7 @@ module BuildrDependencyExtensions
         if (!@dependency_pom_cache[dependency])
           @dependency_pom_cache[dependency] = POM.load(dependency.pom)
         end
-        @dependency_pom_cache[dependency].dependencies([scope]).each do |dep|
+        @dependency_pom_cache[dependency].declared_dependencies([scope]).each do |dep|
           artifact = project.artifact(dep)
           excludes = dependency.instance_variable_get(:@excludes) || []
           matching_dependency = excludes.select do |excluded_dep|
