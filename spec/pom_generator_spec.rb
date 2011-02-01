@@ -89,7 +89,7 @@ XML
     end
 
     pom = project('TestProject').package(:jar).pom
-    p File.read(pom.to_s)
+    pom.invoke
     generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read, {'ForceArray' => ['dependency', 'plugin']})
     expected_pom_hash = {
       'modelVersion' => '4.0.0',
