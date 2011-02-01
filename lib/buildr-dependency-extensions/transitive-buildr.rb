@@ -22,11 +22,13 @@ module BuildrDependencyExtensions
     end
 
     after_define(:'transitive-dependencies' => :run) do |project|
+      now = Time.now
       if project.transitive_scopes
         resolve_compile_dependencies project if project.transitive_scopes.include? :compile
         resolve_runtime_dependencies project if project.transitive_scopes.include? :run
         resolve_test_dependencies    project if project.transitive_scopes.include? :test
       end
+      trace "Adding transitive dependencies took #{Time.now - now} seconds"
     end
 
     module_function
