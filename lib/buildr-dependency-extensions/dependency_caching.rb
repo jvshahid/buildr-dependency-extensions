@@ -35,10 +35,10 @@ module BuildrDependencyExtensions
         compile_dependencies = dependdencies_cache['compile']
         test_dependencies = dependdencies_cache['test']
 
-        @project.run.classpath = runtime_dependencies.map {|dep| @project.artifact(dep)}
-        @project.compile.dependencies = compile_dependencies.map {|dep| @project.artifact(dep)}
-        @project.test.dependencies = test_dependencies.map {|dep| @project.artifact(dep)}
-        @project.test.compile.dependencies = test_dependencies.map {|dep| @project.artifact(dep)}
+        dependdencies_cache['runtime'] = runtime_dependencies.map {|dep| @project.artifact(dep)}
+        dependdencies_cache['compile'] = compile_dependencies.map {|dep| @project.artifact(dep)}
+        dependdencies_cache['test']    = test_dependencies.map {|dep| @project.artifact(dep)}
+        dependdencies_cache
       rescue Errno::ENOENT
         nil
       end

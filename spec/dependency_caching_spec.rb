@@ -21,9 +21,9 @@ describe BuildrDependencyExtensions::DependencyCaching do
 
     project.run.classpath = []
 
-    dependency_caching.read_cache
+    dependency_cache = dependency_caching.read_cache
 
-    project.run.classpath.should ==([artifact('foo:bar:jar:1.1')])
+    dependency_cache['runtime'].should ==([artifact('foo:bar:jar:1.1')])
   end
 
   it 'reads and write the compile dependencies to and from a dependency cache file' do
@@ -39,9 +39,9 @@ describe BuildrDependencyExtensions::DependencyCaching do
 
     project.compile.dependencies = []
 
-    dependency_caching.read_cache
+    dependency_cache = dependency_caching.read_cache
 
-    project.compile.dependencies.should ==([artifact('foo:bar:jar:1.1')])
+    dependency_cache['compile'].should ==([artifact('foo:bar:jar:1.1')])
   end
 
   it 'reads and write the test dependencies to and from a dependency cache file' do
@@ -57,10 +57,9 @@ describe BuildrDependencyExtensions::DependencyCaching do
 
     project.test.dependencies = project.test.compile.dependencies = []
 
-    dependency_caching.read_cache
+    dependency_cache = dependency_caching.read_cache
 
-    project.test.dependencies.should ==([artifact('foo:bar:jar:1.1')])
-    project.test.compile.dependencies.should ==([artifact('foo:bar:jar:1.1')])
+    dependency_cache['test'].should ==([artifact('foo:bar:jar:1.1')])
   end
 
   it 'return nil if no dependency cache file exist' do
