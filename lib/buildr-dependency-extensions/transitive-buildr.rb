@@ -32,10 +32,21 @@ module BuildrDependencyExtensions
           resolve_test_dependencies    project if project.transitive_scopes.include? :test
           dependency_caching.write_cache
         else
-          project.run.classpath = dependency_cache['runtime'] if project.transitive_scopes.include? :run
-          project.compile.dependencies = dependency_cache['compile'] if project.transitive_scopes.include? :compile
-          project.test.dependencies = dependency_cache['test'] if project.transitive_scopes.include? :test
-          project.test.dependencies = dependency_cache['test'] if project.transitive_scopes.include? :test
+          if project.transitive_scopes.include? :run
+            project.run.classpath = project.run.classpath.reject {|dependency| HelperFunctions.is_artifact?(dependency)}
+            project.run.classpath << dependency_cache['runtime']
+          end
+          if project.transitive_scopes.include? :compile
+            project.compile.dependencies = project.compile.dependencies.reject {|dependency| HelperFunctions.is_artifact?(dependency)}
+            project.compile.dependencies << dependency_cache['compile']
+          end
+          if project.transitive_scopes.include? :test
+            project.test.dependencies = project.test.dependencies.reject {|dependency| HelperFunctions.is_artifact?(dependency)}
+            project.test.dependencies << dependency_cache['test']
+
+            project.test.compile.dependencies = project.test.compile.dependencies.reject {|dependency| HelperFunctions.is_artifact?(dependency)}
+            project.test.compile.dependencies << dependency_cache['test']
+          end
         end
       end
       trace "Adding transitive dependencies took #{Time.now - now} seconds"
