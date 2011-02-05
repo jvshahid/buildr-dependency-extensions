@@ -12,6 +12,7 @@ module BuildrDependencyExtensions
       class << base
 
         attr_accessor :transitive_scopes
+        attr_accessor :cache_dependencies
 
         def conflict_resolver
           # @conflict_resolver ||= HighestVersionConflictResolver.new
@@ -26,7 +27,7 @@ module BuildrDependencyExtensions
       if project.transitive_scopes
         dependency_caching = DependencyCaching.new(project)
         dependency_cache = dependency_caching.read_cache
-        unless dependency_cache
+        unless dependency_cache && project.cache_dependencies
           resolve_compile_dependencies project if project.transitive_scopes.include? :compile
           resolve_runtime_dependencies project if project.transitive_scopes.include? :run
           resolve_test_dependencies    project if project.transitive_scopes.include? :test
@@ -34,18 +35,18 @@ module BuildrDependencyExtensions
         else
           if project.transitive_scopes.include? :run
             project.run.classpath = project.run.classpath.reject {|dependency| HelperFunctions.is_artifact?(dependency)}
-            project.run.classpath << dependency_cache['runtime']
+            project.run.classpath += dependency_cache['runtime']
           end
           if project.transitive_scopes.include? :compile
             project.compile.dependencies = project.compile.dependencies.reject {|dependency| HelperFunctions.is_artifact?(dependency)}
-            project.compile.dependencies << dependency_cache['compile']
+            project.compile.dependencies += dependency_cache['compile']
           end
           if project.transitive_scopes.include? :test
             project.test.dependencies = project.test.dependencies.reject {|dependency| HelperFunctions.is_artifact?(dependency)}
-            project.test.dependencies << dependency_cache['test']
+            project.test.dependencies += dependency_cache['test']
 
             project.test.compile.dependencies = project.test.compile.dependencies.reject {|dependency| HelperFunctions.is_artifact?(dependency)}
-            project.test.compile.dependencies << dependency_cache['test']
+            project.test.compile.dependencies += dependency_cache['test']
           end
         end
       end
