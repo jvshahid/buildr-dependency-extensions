@@ -15,42 +15,50 @@
 
 
 begin
-  require 'spec/rake/spectask'
+  require 'rspec/core/rake_task'
   directory '_reports'
 
   def default_spec_opts
-    default = %w{--format failing_examples:failed --format html:_reports/specs.html --backtrace}
-    default << '--colour' if $stdout.isatty
+    default = %w{--format html --out _reports/specs.html --backtrace}
+    default << '--colour' if $stdout.isatty && !(Config::CONFIG['host_os'] =~ /mswin|win32|dos/i)
     default
   end
 
+  # RSpec doesn't support file exclusion, so hack our own.
+  class RSpec::Core::RakeTask
+    attr_accessor :rspec_files
+  private
+    def files_to_run
+      @rspec_files
+    end
+  end
+
   desc "Run all specs"
-  Spec::Rake::SpecTask.new :spec=>['_reports'] do |task|
+  RSpec::Core::RakeTask.new :spec=>['_reports'] do |task|
     ENV['USE_FSC'] = 'no'
-    task.spec_files = FileList['spec/**/*_spec.rb']
-    task.spec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
-    task.spec_opts = default_spec_opts
-    task.spec_opts << '--format specdoc'
+    task.rspec_files = FileList['spec/**/*_spec.rb']
+    task.rspec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
+    task.rspec_opts = default_spec_opts
+    task.rspec_opts << '--format html --out _reports/spec.html --backtrace'
   end
   file('_reports/specs.html') { task(:spec).invoke }
 
   desc 'Run all failed examples from previous run'
-  Spec::Rake::SpecTask.new :failed do |task|
+  RSpec::Core::RakeTask.new :failed do |task|
     ENV['USE_FSC'] = 'no'
-    task.spec_files = FileList['spec/**/*_spec.rb']
-    task.spec_opts = default_spec_opts
-    task.spec_opts << '--format specdoc' << '--example failed'
+    task.rspec_files = FileList['spec/**/*_spec.rb']
+    task.rspec_opts = default_spec_opts
+    task.rspec_opts << '--format specdoc' << '--example failed'
   end
 
   desc 'Run RSpec and generate Spec and coverage reports (slow)'
-  Spec::Rake::SpecTask.new :coverage=>['_reports', :compile] do |task|
+  RSpec::Core::RakeTask.new :coverage=>['_reports', :compile] do |task|
     ENV['USE_FSC'] = 'no'
-    task.spec_files = FileList['spec/**/*_spec.rb']
-    task.spec_opts = default_spec_opts
-    task.spec_opts << '--format progress'
+    task.rspec_files = FileList['spec/**/*_spec.rb']
+    task.rspec_opts = default_spec_opts
+    task.rspec_opts << '--format progress'
     task.rcov = true
-    task.rcov_dir = '_reports/coverage'
-    task.rcov_opts = %w{--exclude / --include-file ^lib --text-summary}
+    task.rcov_opts = %w{-o _reports/coverage --exclude / --include-file ^lib --text-summary}
   end
   file('_reports/coverage') { task(:coverage).invoke }
 
