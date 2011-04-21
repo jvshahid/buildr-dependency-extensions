@@ -105,6 +105,9 @@ module BuildrDependencyExtensions
           add_dependency project, new_dependencies, artifact, scopes, (depth + 1) if matching_dependency.empty?
         end
       end
+      class << dependency
+        attr_accessor :depth
+      end
       dependency.depth = depth
       new_dependencies << dependency
     end

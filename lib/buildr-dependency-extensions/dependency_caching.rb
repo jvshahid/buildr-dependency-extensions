@@ -21,6 +21,7 @@ module BuildrDependencyExtensions
         map    {|dep| dep.to_spec}
 
       dependency_caching_filename = @project.path_to('dependency.cache')
+      FileUtils.mkdir_p(File.dirname(dependency_caching_filename))
       f = File.new(dependency_caching_filename, 'w')
       f.write(dependencies_cache.to_yaml)
       f.close
