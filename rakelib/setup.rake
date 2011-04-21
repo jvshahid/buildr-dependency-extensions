@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'rubygems/source_info_cache'
-
 RAKE_SUDO = case (ENV['RAKE_SUDO'] or 'false').strip.downcase
   when 'yes', 'true'
     true
