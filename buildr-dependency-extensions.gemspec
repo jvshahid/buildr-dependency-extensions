@@ -1,3 +1,5 @@
+# -*- ruby -*-
+
 unless defined?(BuildrDepenencyExtensions::VERSION)
   require File.join(File.dirname(__FILE__), 'lib', 'buildr-dependency-extensions', 'version')
 end
