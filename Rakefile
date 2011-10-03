@@ -33,4 +33,4 @@ end
 desc 'Clean up all temporary directories used for running tests, creating documentation, packaging, etc.'
 task :clobber
 
-task :default => [:spec]
+task :default => [:setup, :spec]
