@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
 
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '0.8.7'
-  spec.add_dependency 'buildr',               '>= 1.4.5'
+  spec.add_dependency 'buildr',               '= 1.4.5'
   spec.add_dependency 'xml-simple',           '~> 1.0.12'
   spec.add_dependency 'rspec-expectations',   '2.1.0'
   spec.add_dependency 'rspec-mocks',          '2.1.0'
