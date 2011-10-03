@@ -97,6 +97,6 @@ begin
 
 rescue LoadError
   puts "We need RSpec to run the tests. You can install it by running rake setup"
-  task(:setup) { install_gem 'rcov', :version=>'~>0.8' }
-  task(:setup) { install_gem 'win32console' if RUBY_PLATFORM[/win32/] } # Colors for RSpec, only on Windows platform.
+  # task(:setup) { install_gem 'rcov', :version=>'~>0.8' }
+  # task(:setup) { install_gem 'win32console' if RUBY_PLATFORM[/win32/] } # Colors for RSpec, only on Windows platform.
 end
