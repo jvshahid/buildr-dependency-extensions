@@ -21,7 +21,7 @@ begin
   directory '_reports'
 
   def default_spec_opts
-    default = %w{--format html --out _reports/specs.html --backtrace}
+    default = %w{--backtrace}
     default << '--colour' if $stdout.isatty && !(Config::CONFIG['host_os'] =~ /mswin|win32|dos/i)
     default
   end
@@ -36,12 +36,12 @@ begin
   end
 
   desc "Run all specs"
-  RSpec::Core::RakeTask.new :spec=>['_reports'] do |task|
+  RSpec::Core::RakeTask.new :spec=>[:_reports] do |task|
     ENV['USE_FSC'] = 'no'
     task.rspec_files = FileList['spec/**/*_spec.rb']
     task.rspec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
     task.rspec_opts = default_spec_opts
-    task.rspec_opts << '--format html --out _reports/spec.html --backtrace'
+    task.rspec_opts << '--backtrace'
   end
   file('_reports/specs.html') { task(:spec).invoke }
 
