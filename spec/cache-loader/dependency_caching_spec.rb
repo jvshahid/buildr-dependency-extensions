@@ -1,11 +1,9 @@
-require 'rubygems'
-require 'buildr'
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib/buildr-dependency-extensions'))
-require File.expand_path(File.join('spec', 'spec_helpers'), Gem::GemPathSearcher.new.find('buildr').full_gem_path)
+require 'spec_helper'
 
 describe BuildrDependencyExtensions::DependencyCaching do
+
   before(:each) do
-    write artifact('foo:bar:jar:1.0').pom.to_s, <<-XML
+    Buildr.write Buildr.artifact('foo:bar:jar:1.0').pom.to_s, <<-XML
 <project>
   <artifactId>bar</artifactId>
   <groupId>foo</groupId>

@@ -1,7 +1,4 @@
-require 'rubygems'
-require 'buildr'
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib', 'buildr-dependency-extensions'))
-require File.expand_path(File.join('spec', 'spec_helpers'), Gem::GemPathSearcher.new.find('buildr').full_gem_path)
+require 'spec_helper'
 
 describe 'Issue 1, mockito 1.8.1-rc1 is chosen instead of 1.8.5' do
   before(:each) do
