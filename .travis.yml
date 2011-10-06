@@ -5,3 +5,6 @@ rvm:
 notifications:
   email:
     - jvshahid@gmail.com
+branches:
+  only:
+    - master
