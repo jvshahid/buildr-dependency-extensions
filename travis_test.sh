@@ -4,4 +4,5 @@ java=$(readlink -f $(which java))
 export JAVA_HOME=${java%jre/*}
 echo "Set JAVA_HOME to $JAVA_HOME"
 bundle install
+git submodule update --init
 rake
