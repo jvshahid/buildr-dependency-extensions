@@ -3,6 +3,6 @@ This is a Buildr extension that will convert Buildr to transitively resolve depe
 
 See the [Usage wiki section](https://github.com/jvshahid/buildr-dependency-extensions/wiki) for examples.
 
-# Current build stats: ![Build Status](https://secure.travis-ci.org/jvshahid/buildr-dependency-extensions.png)
+# Current build stats: ![Build Status](https://secure.travis-ci.org/jvshahid/buildr-dependency-extensions.png)(http://travis-ci.org/jvshahid/buildr-dependency-extensions)
 
 Thanks to Travis CI.
