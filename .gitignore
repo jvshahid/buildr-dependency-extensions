@@ -5,3 +5,4 @@ failed
 pkg/
 TAGS
 tmp/
+Gemfile.lock
