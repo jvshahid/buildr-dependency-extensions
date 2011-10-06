@@ -24,7 +24,18 @@ namespace "emacs" do
   desc "Generate tags for emacs"
   task :tags => Tags::RUBY_FILES do
     puts "Making Emacs TAGS file"
-    sh "etags #{Tags::RUBY_FILES} -o #{Tags::TAG_FILE}", :verbose => false
+    # ctags-exuberant is a better tool for generating ruby (and a bunch of other languages) tags
+    which_tagging_tool = `which ctags-exuberant`[0..-2]
+
+    if which_tagging_tool.empty?
+      which_tagging_tool = `which etags`[0..-2]
+    else
+      which_tagging_tool << " --extra=+f -e"
+    end
+
+    raise 'Please install either etags or ctags-exuberant' if which_tagging_tool.empty?
+
+    sh "#{which_tagging_tool} -o #{Tags::TAG_FILE} #{Tags::RUBY_FILES}", :verbose => false
   end
 end
 
