@@ -180,4 +180,20 @@ XML
     }
     generated_pom_hash.should eql expected_pom_hash
   end
+  
+  it 'should generate correct artifactId for sub projects' do
+    define 'foo' do
+      define 'bar' do
+        extend PomGenerator
+        
+        project.version = '1.0-SNAPSHOT'
+        project.group = 'foo.bar'
+      end
+    end
+    
+    pom = project('foo:bar').package(:jar).pom
+    pom.invoke
+    generated_pom_hash = XmlSimple.xml_in(File.open(pom.to_s).read)
+    generated_pom_hash['artifactId'].should eql ["foo-bar"]
+  end
 end
