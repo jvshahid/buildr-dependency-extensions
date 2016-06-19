@@ -60,7 +60,7 @@ module BuildrDependencyExtensions
       pom_hash = {
         'modelVersion' => '4.0.0',
         'groupId'      => project.group,
-        'artifactId'   => project.name,
+        'artifactId'   => project.name.gsub(":", "-"),
         'version'      => project.version,
         'dependencies' => {'dependency' => dependencies_hashes.to_a}
       }
